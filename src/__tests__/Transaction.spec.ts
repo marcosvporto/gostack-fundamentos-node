@@ -19,6 +19,21 @@ describe('Transaction', () => {
     });
   });
 
+  it('should not be able to create outcome transaction without a valid balance', async () => {
+    const response = await request(app).post('/transactions').send({
+      title: 'Bicycle',
+      type: 'outcome',
+      value: 3000,
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toMatchObject(
+      expect.objectContaining({
+        error: expect.any(String),
+      }),
+    );
+  });
+
   it('should be able to list the transactions', async () => {
     await request(app).post('/transactions').send({
       title: 'Salary',
@@ -33,7 +48,8 @@ describe('Transaction', () => {
     });
 
     const response = await request(app).get('/transactions');
-
+    console.log('aqui');
+    console.log(response.body);
     expect(response.body.transactions).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -62,20 +78,5 @@ describe('Transaction', () => {
       outcome: 1500,
       total: 2700,
     });
-  });
-
-  it('should not be able to create outcome transaction without a valid balance', async () => {
-    const response = await request(app).post('/transactions').send({
-      title: 'Bicycle',
-      type: 'outcome',
-      value: 3000,
-    });
-
-    expect(response.status).toBe(400);
-    expect(response.body).toMatchObject(
-      expect.objectContaining({
-        error: expect.any(String),
-      }),
-    );
   });
 });
